@@ -93,8 +93,7 @@ let googleDocsAccessToken = null;
 let currentDocumentId = null;
 
 // Función para obtener el ID del documento de Google Docs
-function extractDocumentIdFromUrl() {
-  const url = window.location.href;
+function extractDocumentIdFromUrl(url = window.location.href) {
   const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
   return match ? match[1] : null;
 }
@@ -866,31 +865,7 @@ function analyzeExtractedText(documentData) {
   };
 }
 
-// Función auxiliar para análisis más detallado (para futuras expansiones)
-function performDetailedAnalysis(documentData) {
-  console.log('🔬 Iniciando análisis detallado...');
-  
-  // Aquí se pueden agregar análisis más complejos en el futuro:
-  // - Análisis de sentimientos
-  // - Detección de temas
-  // - Análisis de legibilidad
-  // - Extracción de entidades
-  // - etc.
-  
-  console.log('ℹ️ Análisis detallado: Funcionalidad pendiente de implementar');
-  
-  return {
-    detailedAnalysis: 'Pendiente de implementar'
-  };
-}
-
 // ===== FIN DE FUNCIONES DE ANÁLISIS =====
-
-// Función para extraer el ID del documento de la URL de Google Docs
-function extractDocumentIdFromUrl(url) {
-  const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
-  return match ? match[1] : null;
-}
 
 // Función para extraer texto de la estructura del documento de la API
 function extractTextFromDocumentStructure(docData) {
@@ -1983,7 +1958,7 @@ window.rejectSuggestion = function(suggestionId) {
 }
 
 // Función auxiliar para crear elementos DOM de manera segura
-function createSafeElement(tag, styles, content) {
+const createSafeElement = (tag, styles, content) => {
   const element = document.createElement(tag);
   if (styles) {
     element.style.cssText = styles;
@@ -1992,22 +1967,22 @@ function createSafeElement(tag, styles, content) {
     element.textContent = content;
   }
   return element;
-}
+};
 
 // Función auxiliar para crear SVG de manera segura
-function createSafeSVG(width, height, viewBox, fill, pathData) {
+const createSafeSVG = (width, height, viewBox, fill, pathData) => {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('width', width);
   svg.setAttribute('height', height);
   svg.setAttribute('viewBox', viewBox);
   svg.setAttribute('fill', fill);
-  
+
   const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
   path.setAttribute('d', pathData);
   svg.appendChild(path);
-  
+
   return svg;
-}
+};
 
 // Función de re-análisis (definida antes para evitar problemas de referencia)
 window.reAnalyzeText = function() {
