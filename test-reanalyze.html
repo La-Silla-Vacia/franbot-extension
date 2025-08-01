@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Re-analyze Button</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background: linear-gradient(135deg, #338BFD 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 10px;
+        }
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(51, 139, 253, 0.3);
+        }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔄 Test del Botón Re-analizar</h1>
+        <p>Esta página simula el funcionamiento del botón de re-analizar para verificar que todas las funciones estén correctamente implementadas.</p>
+        
+        <button id="test-reanalyze" class="button">🔄 Re-analizar (Test)</button>
+        <button id="test-functions" class="button">🧪 Test Funciones</button>
+        <button id="clear-log" class="button">🗑️ Limpiar Log</button>
+        
+        <div id="log" class="log">
+            <div>📋 Log de pruebas:</div>
+        </div>
+    </div>
+
+    <script>
+        // Simular las funciones del content script
+        function createSafeElement(tag, styles, content) {
+            const element = document.createElement(tag);
+            if (styles) {
+                element.style.cssText = styles;
+            }
+            if (content) {
+                element.textContent = content;
+            }
+            return element;
+        }
+
+        function createSafeSVG(width, height, viewBox, fill, path) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', width);
+            svg.setAttribute('height', height);
+            svg.setAttribute('viewBox', viewBox);
+            svg.setAttribute('fill', fill);
+            
+            const pathElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            pathElement.setAttribute('d', path);
+            svg.appendChild(pathElement);
+            
+            return svg;
+        }
+
+        function showNotification(message, type = 'info') {
+            log(`📢 Notificación (${type}): ${message}`);
+        }
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Simular datos de prueba
+        window.analysisResults = {
+            data: {
+                title: "Documento de Prueba",
+                fullText: "Este es un documento de prueba para verificar el funcionamiento del botón de re-analizar.",
+                wordCount: 15
+            }
+        };
+
+        window.currentSuggestions = [
+            {
+                id: 1,
+                type: "mejora_redaccion",
+                title: "Mejora de redacción",
+                originalText: "documento de prueba",
+                suggestedText: "documento de prueba completo",
+                explanation: "Agregar más detalles mejora la claridad",
+                confidence: 0.85,
+                category: "estilo",
+                backgroundColor: "transparent",
+                borderColor: "#9ca3af"
+            }
+        ];
+
+        // Simular funciones de análisis
+        async function extractPageTextWithAPI() {
+            log("🔍 Simulando extracción de texto...");
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            return {
+                title: "Documento Re-analizado",
+                fullText: "Este es el texto re-analizado del documento.",
+                wordCount: 8,
+                extractedAt: new Date().toISOString()
+            };
+        }
+
+        function analyzeExtractedText(pageData) {
+            log("🔬 Simulando análisis de texto...");
+            return {
+                success: true,
+                analysis: {
+                    sentences: 2,
+                    avgWordsPerSentence: 4
+                }
+            };
+        }
+
+        function generateSuggestions(pageData, analysisResult) {
+            log("💡 Generando sugerencias...");
+            return [
+                {
+                    id: 1,
+                    type: "mejora_redaccion",
+                    title: "Nueva sugerencia",
+                    originalText: "texto re-analizado",
+                    suggestedText: "texto completamente re-analizado",
+                    explanation: "Resultado del re-análisis",
+                    confidence: 0.90,
+                    category: "estilo",
+                    backgroundColor: "transparent",
+                    borderColor: "#9ca3af"
+                }
+            ];
+        }
+
+        // Función de re-análisis (copia de la original)
+        window.reAnalyzeText = async function() {
+            log('🔄 Re-analizando texto...');
+            
+            const button = document.getElementById('test-reanalyze');
+            
+            if (button) {
+                try {
+                    // Resetear variables globales
+                    window.analysisResults = null;
+                    window.currentSuggestions = null;
+                    
+                    log('🔄 Reiniciando análisis...');
+                    
+                    // Cambiar estado a analizando
+                    button.textContent = '';
+                    const loadingContainer = createSafeElement('div', 'display: flex; align-items: center; gap: 8px;');
+                    const spinner = createSafeElement('div', 'width: 16px; height: 16px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;');
+                    const loadingText = createSafeElement('span', 'font-size: 12px;', 'Analizando...');
+                    loadingContainer.appendChild(spinner);
+                    loadingContainer.appendChild(loadingText);
+                    button.appendChild(loadingContainer);
+                    button.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+                    button.disabled = true;
+                    
+                    showNotification('🔄 Analizando documento...', 'info');
+                    
+                    // Extraer texto usando API simulada
+                    const pageData = await extractPageTextWithAPI();
+                    
+                    if (pageData && !pageData.error) {
+                        log('✅ Texto extraído exitosamente');
+                        
+                        // Llamar a la función de análisis de texto
+                        let analysisResult = analyzeExtractedText(pageData);
+                        
+                        // Almacenar resultados globalmente
+                        window.analysisResults = { data: pageData, analysis: analysisResult };
+                        
+                        // Cambiar estado del botón a resultados
+                        button.textContent = '';
+                        const resultsContainer = createSafeElement('div', 'display: flex; align-items: center; gap: 8px;');
+                        const checkSvg = createSafeSVG('16', '16', '0 0 24 24', 'white', 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z');
+                        const resultsText = createSafeElement('span', 'font-size: 12px;', 'Ver Resultados');
+                        resultsContainer.appendChild(checkSvg);
+                        resultsContainer.appendChild(resultsText);
+                        button.appendChild(resultsContainer);
+                        button.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+                        button.disabled = false;
+                        
+                        // Generar y mostrar resultados
+                        const suggestions = generateSuggestions(pageData, analysisResult?.analysis);
+                        window.currentSuggestions = suggestions;
+                        
+                        showNotification('✅ Re-análisis completado. Nuevas sugerencias disponibles.', 'success');
+                        log('✅ Re-análisis completado exitosamente');
+                        
+                    } else {
+                        log('❌ No se pudo extraer texto del documento');
+                        showNotification('❌ Error en la extracción', 'error');
+                        
+                        // Resetear botón a estado inicial
+                        button.textContent = '🔄 Re-analizar (Test)';
+                        button.style.background = 'linear-gradient(135deg, #338BFD 0%, #2563eb 100%)';
+                        button.disabled = false;
+                    }
+                } catch (error) {
+                    log('❌ Error durante el re-análisis: ' + error.message);
+                    
+                    // Resetear botón a estado inicial
+                    button.textContent = '🔄 Re-analizar (Test)';
+                    button.style.background = 'linear-gradient(135deg, #338BFD 0%, #2563eb 100%)';
+                    button.disabled = false;
+                    
+                    showNotification('❌ Error durante el re-análisis: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Event listeners
+        document.getElementById('test-reanalyze').addEventListener('click', window.reAnalyzeText);
+        
+        document.getElementById('test-functions').addEventListener('click', function() {
+            log('🧪 Probando funciones auxiliares...');
+            
+            // Test createSafeElement
+            const testElement = createSafeElement('div', 'color: red;', 'Test Element');
+            log('✅ createSafeElement: ' + (testElement.tagName === 'DIV' ? 'OK' : 'FAIL'));
+            
+            // Test createSafeSVG
+            const testSVG = createSafeSVG('24', '24', '0 0 24 24', 'blue', 'M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z');
+            log('✅ createSafeSVG: ' + (testSVG.tagName === 'svg' ? 'OK' : 'FAIL'));
+            
+            // Test variables globales
+            log('✅ window.analysisResults: ' + (window.analysisResults ? 'OK' : 'FAIL'));
+            log('✅ window.currentSuggestions: ' + (window.currentSuggestions ? 'OK' : 'FAIL'));
+            
+            log('🎉 Todas las funciones están disponibles');
+        });
+        
+        document.getElementById('clear-log').addEventListener('click', function() {
+            document.getElementById('log').innerHTML = '<div>📋 Log de pruebas:</div>';
+        });
+
+        // Inicializar
+        log('🚀 Página de prueba cargada');
+        log('📋 Variables globales inicializadas');
+    </script>
+</body>
+</html>

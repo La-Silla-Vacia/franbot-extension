@@ -1,61 +1,133 @@
-# Getting Started with Create React App
+# Franbot - Extensión de Chrome
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Franbot es un asistente inteligente para Chrome que te ayuda a analizar y comprender contenido web de manera interactiva.
 
-## Available Scripts
+## 🤖 Características
 
-In the project directory, you can run:
+- **Interfaz de chat intuitiva**: Comunícate con Franbot a través de una interfaz moderna y fácil de usar
+- **Análisis de contenido web**: Analiza texto seleccionado en cualquier página web
+- **Menú contextual**: Acceso rápido desde el menú del botón derecho
+- **Diseño responsivo**: Optimizado para el popup de extensiones de Chrome
+- **Iconos personalizados**: Robot con fondo azul en múltiples tamaños
 
-### `npm start`
+## 🚀 Instalación
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Para Desarrollo
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Clona o descarga este repositorio
+2. Instala las dependencias:
+   ```bash
+   pnpm install
+   ```
+3. Construye la extensión:
+   ```bash
+   pnpm run build
+   ```
+4. Abre Chrome y ve a `chrome://extensions/`
+5. Activa el "Modo de desarrollador" en la esquina superior derecha
+6. Haz clic en "Cargar extensión sin empaquetar"
+7. Selecciona la carpeta `build` del proyecto
 
-### `npm test`
+### Para Producción
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. Descarga el archivo `.zip` de la extensión
+2. Descomprime el archivo
+3. Sigue los pasos 4-7 de la instalación para desarrollo
 
-### `npm run build`
+## 🛠️ Desarrollo
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Scripts Disponibles
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- `pnpm start` - Inicia el servidor de desarrollo
+- `pnpm run build` - Construye la extensión para producción
+- `pnpm run build-original` - Construye usando la configuración original de React
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Estructura del Proyecto
 
-### `npm run eject`
+```
+franbot-extension/
+├── public/
+│   ├── icons/           # Iconos de la extensión
+│   ├── manifest.json    # Configuración de la extensión
+│   ├── background.js    # Script de background
+│   ├── content.js       # Script de contenido
+│   └── index.html       # HTML del popup
+├── src/
+│   ├── App.js          # Componente principal
+│   ├── App.css         # Estilos principales
+│   └── index.js        # Punto de entrada
+└── build/              # Archivos construidos
+    ├── index.js        # JavaScript combinado
+    ├── index.css       # CSS combinado
+    └── ...             # Otros archivos de la extensión
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🎨 Personalización
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Iconos
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Los iconos están ubicados en `public/icons/` y incluyen:
+- `franbot-icon.svg` - Icono vectorial original
+- `icon-16.png`, `icon-32.png`, `icon-48.png`, `icon-128.png` - Versiones PNG
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Para cambiar el icono:
+1. Reemplaza `franbot-icon.svg`
+2. Regenera los PNG usando: `npx sharp-cli -i "public/icons/franbot-icon.svg" -o "public/icons/icon-[SIZE].png" resize [SIZE] [SIZE]`
 
-## Learn More
+### Estilos
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Los estilos principales están en `src/App.css`. La extensión usa:
+- Gradiente azul-púrpura de fondo
+- Efectos de vidrio esmerilado (backdrop-filter)
+- Diseño responsivo para 400x600px
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 📦 Construcción
 
-### Code Splitting
+La extensión utiliza una configuración personalizada de webpack que:
+- Combina todo el JavaScript en un solo archivo `index.js`
+- Combina todo el CSS en un solo archivo `index.css`
+- Deshabilita ESLint durante la construcción
+- Mantiene los archivos de la extensión (manifest.json, background.js, content.js)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 🔧 Configuración Técnica
 
-### Analyzing the Bundle Size
+### Dependencias Principales
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- `react` - Framework de UI
+- `react-app-rewired` - Personalización de webpack
+- `customize-cra` - Utilidades para personalizar Create React App
+- `cross-env` - Variables de entorno multiplataforma
+- `sharp-cli` - Procesamiento de imágenes
 
-### Making a Progressive Web App
+### Permisos de la Extensión
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- `activeTab` - Acceso a la pestaña activa
+- `storage` - Almacenamiento local
+- `contextMenus` - Menús contextuales
+
+## 🐛 Solución de Problemas
+
+### Error de construcción con ESLint
+Si encuentras errores de ESLint durante la construcción, asegúrate de que la variable de entorno `DISABLE_ESLINT_PLUGIN=true` esté configurada.
+
+### Iconos no se muestran
+Verifica que todos los archivos PNG estén en `public/icons/` y que el `manifest.json` tenga las rutas correctas.
+
+### Popup no se abre
+Asegúrate de que `index.html` esté en la carpeta `build` después de la construcción.
+
+## 📄 Licencia
+
+Este proyecto está bajo la licencia MIT. Ver el archivo LICENSE para más detalles.
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+1. Haz fork del proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
 ### Advanced Configuration
 
