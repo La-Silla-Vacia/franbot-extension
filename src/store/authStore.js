@@ -39,8 +39,10 @@ const useAuthStore = create(
               client_id: clientId,
               response_type: 'token',
               redirect_uri: redirectUri,
-              scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
+              scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive.readonly',
               include_granted_scopes: 'true',
+              prompt: 'consent',
+              access_type: 'online',
               state: 'debug_test_' + Date.now()
             }).toString();
 
@@ -139,11 +141,11 @@ const useAuthStore = create(
           const clientId = '571791803428-h5qdt3rdtbk3g1p5ut2k8fvioh59h8qp.apps.googleusercontent.com';
           const redirectUri = chrome.identity.getRedirectURL('google');
           const scopes = [
-            'https://www.googleapis.com/auth/userinfo.email', 
-            'https://www.googleapis.com/auth/userinfo.profile',
-            'https://www.googleapis.com/auth/documents.readonly',
-            'https://www.googleapis.com/auth/drive.readonly'
-          ];
+      'https://www.googleapis.com/auth/userinfo.email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+      'https://www.googleapis.com/auth/documents',
+      'https://www.googleapis.com/auth/drive.readonly'
+    ];
           
           console.log('📋 Configuración OAuth:');
           console.log('- Redirect URI:', redirectUri);
@@ -158,6 +160,8 @@ const useAuthStore = create(
               redirect_uri: redirectUri,
               scope: scopes.join(' '),
               include_granted_scopes: 'true',
+              prompt: 'consent', // Forzar pantalla de consentimiento para nuevos permisos
+              access_type: 'online',
               state: 'franbot_auth_' + Date.now()
             }).toString();
 
@@ -239,6 +243,27 @@ const useAuthStore = create(
           
           const userInfo = await userResponse.json();
           console.log('✅ Información del usuario obtenida:', userInfo);
+
+          // Verificar que se obtuvieron los permisos de escritura
+          console.log('🔍 Verificando permisos de escritura...');
+          try {
+            const tokenInfoResponse = await fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`);
+            if (tokenInfoResponse.ok) {
+              const tokenInfo = await tokenInfoResponse.json();
+              const tokenScopes = tokenInfo.scope ? tokenInfo.scope.split(' ') : [];
+              
+              console.log('📋 Scopes obtenidos:', tokenScopes);
+              
+              const hasWritePermission = tokenScopes.includes('https://www.googleapis.com/auth/documents');
+              if (hasWritePermission) {
+                console.log('✅ Permisos de escritura confirmados');
+              } else {
+                console.warn('⚠️ No se obtuvieron permisos de escritura completos');
+              }
+            }
+          } catch (error) {
+            console.warn('⚠️ No se pudo verificar permisos:', error);
+          }
 
           set({
             isAuthenticated: true,
@@ -356,9 +381,9 @@ const useAuthStore = create(
           
           // Verificar que tenga los scopes necesarios
           const requiredScopes = [
-            'https://www.googleapis.com/auth/documents.readonly',
-            'https://www.googleapis.com/auth/drive.readonly'
-          ];
+        'https://www.googleapis.com/auth/documents',
+        'https://www.googleapis.com/auth/drive.readonly'
+      ];
           
           const tokenScopes = tokenInfo.scope ? tokenInfo.scope.split(' ') : [];
           const hasRequiredScopes = requiredScopes.every(scope => tokenScopes.includes(scope));
